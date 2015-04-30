@@ -11,9 +11,7 @@ In this series, I'll describe the process of specially crafting a malicious firm
 
 ##What's this repository for?
 
-Many of the installments in this series will feature code that aids in the various stages of reverse engineering and exploiting the target device
-
-Many, but not all, installments in the series will feature new code or updates to previous code. Each part of the series featuring new or updated code will have a corresponding folder here. If you clone this repo, you should be able to get the latest updates whenever a new part goes up on the blog just by doing a pull.
+Many of the installments in this series will feature code that aids in the various stages of reverse engineering and exploiting the target device. Each part of the series featuring new or updated code will have a corresponding folder here. If you clone this repo, you should be able to get the latest updates whenever a new part goes up on the blog just by doing a pull.
 
 Check out [part 1](http://shadow-file.blogspot.com/2015/04/abandoned-part-01.html) here.
 
