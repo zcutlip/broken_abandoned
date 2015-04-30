@@ -15,6 +15,5 @@ Many of the installments in this series will feature code that aids in the vario
 
 Check out [part 1](http://shadow-file.blogspot.com/2015/04/abandoned-part-01.html) here.
 
-
 Note: you will require Bowcaster, which you can get [here](https://github.com/zcutlip/bowcaster).
 
