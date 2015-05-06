@@ -6,13 +6,42 @@
 # See LICENSE for more details.
 # 
 
+import sys
 import socket
 import time
+import base64
 from bowcaster.common import Logging
 
 
 #HOST="10.12.34.1"
 HOST="192.168.127.141"
+
+
+class SetFirmwareRequest(object):
+    """
+    Generate a "SetFirmware" SOAP request
+    
+    Params
+    ------
+    logger: Optional. A Bowcaster Logging object. If a logger
+            is not provided, one will be instantiated.
+    """
+    MIN_CONTENT_LENGTH=102401
+    def __init__(self,firmware_file=None,logger=None):
+        if not logger:
+            logger=Logging(max_level=Logging.DEBUG)
+        if firmware_file:
+            logger.LOG_INFO("Reading firmware data from: %s" % firmware_file)
+            firmware_data=open(firmware_file,"rb").read()
+        else:
+            logger.LOG_INFO("Generating padding of As in place of firmware data.")
+            firmware_data="A"*self.MIN_CONTENT_LENGTH
+        
+        self.request_body=SetFirmwareBody(firmware_data,logger=logger)
+        self.request_headers=SetFirmwareRequestHeaders(self.MIN_CONTENT_LENGTH)
+    
+    def __str__(self):
+        return str(self.request_headers)+str(self.request_body)
 
 class SetFirmwareRequestHeaders(object):
     def __init__(self,content_length):
@@ -31,30 +60,21 @@ class SetFirmwareRequestHeaders(object):
         return self.headers
 
 
-class SetFirmwareRequest(object):
-    """
-    Generate a "SetFirmware" SOAP request
-    
-    Params
-    ------
-    logger: Optional. A Bowcaster Logging object. If a logger
-            is not provided, one will be instantiated.
-    """
-    MIN_CONTENT_LENGTH=102401
-    def __init__(self,logger=None):
+class SetFirmwareBody(object):
+    SOAP_REQUEST_START="</NewFirmware></SOAP-ENV:Body>"
+    SOAP_REQUEST_END="</NewFirmware></SOAP-ENV:Body>"
+    def __init__(self,firmware_data,logger=None):
         if not logger:
             logger=Logging(max_level=Logging.DEBUG)
+        self.logger=logger
+        logger.LOG_DEBUG("Building SetFirmware request body.")
+        logger.LOG_DEBUG("Length of firmware: %d" % len(firmware_data))
+        self.encoded_firmware=base64.b64encode(firmware_data)
         
-        self.request_body="A"*self.MIN_CONTENT_LENGTH
-        
-        length=len(self.request_body)
-        logger.LOG_DEBUG("Length of request body is: %d" % length)
-        
-        self.request_headers=SetFirmwareRequestHeaders(length)
+        logger.LOG_DEBUG("Length of encoded firmware: %d" % len(self.encoded_firmware))
     
     def __str__(self):
-        return str(self.request_headers)+self.request_body
-        
+        return self.SOAP_REQUEST_START+self.encoded_firmware+self.SOAP_REQUEST_END
 
 def special_upnp_send(addr,port,data):
     sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -83,9 +103,9 @@ def special_upnp_send(addr,port,data):
     sock.close()
 
 
-def main():
+def main(firmware_file=None):
     logger=Logging(max_level=Logging.DEBUG)
-    request=SetFirmwareRequest(logger=logger)
+    request=SetFirmwareRequest(firmware_file=firmware_file,logger=logger)
     
     #write out the request to a file so we can easily analyze what we sent.
     logger.LOG_DEBUG("Writing request to request.bin for analysis.")
@@ -97,6 +117,11 @@ def main():
     logger.LOG_INFO("Done.")
 
 if __name__ == "__main__":
-    main()
+    try:
+        
+        firmware_file=sys.argv[1]
+    except:
+        firmware_file=None
+    main(firmware_file)
 
     
