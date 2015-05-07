@@ -25,22 +25,24 @@ class SetFirmwareRequest(object):
     ------
     firmware_file:  Optional. The name of a file to base64 encode into
                     the SOAP request. If no file is provided, a string
-                    of As gets encoded in its place.
+                    of As is used (unencoded) in its place.
     logger:         Optional. A Bowcaster Logging object. If a logger
                     is not provided, one will be instantiated.
     """
     MIN_CONTENT_LENGTH=102401
     def __init__(self,firmware_file=None,logger=None):
+        b64encode=True
         if not logger:
             logger=Logging(max_level=Logging.DEBUG)
         if firmware_file:
             logger.LOG_INFO("Reading firmware data from: %s" % firmware_file)
             firmware_data=open(firmware_file,"rb").read()
         else:
+            b64encode=False
             logger.LOG_INFO("Generating padding of As in place of firmware data.")
             firmware_data="A"*self.MIN_CONTENT_LENGTH
         
-        self.request_body=SetFirmwareBody(firmware_data,logger=logger)
+        self.request_body=SetFirmwareBody(firmware_data,b64encode=b64encode,logger=logger)
         self.request_headers=SetFirmwareRequestHeaders(self.MIN_CONTENT_LENGTH)
     
     def __str__(self):
@@ -76,19 +78,23 @@ class SetFirmwareBody(object):
     
     Params
     ------
-    firmware_data:  Data to base64 encode into the request.
+    firmware_data:  Data to encapsulate in the request.
+    b64encode:      Optional. Boolean flag whether to base64 encode firmware_data.
     logger:         Optional. A Bowcaster Logging object. If a logger
                     is not provided, one will be instantiated.
     """
     SOAP_REQUEST_START="</NewFirmware></SOAP-ENV:Body>"
     SOAP_REQUEST_END="</NewFirmware></SOAP-ENV:Body>"
-    def __init__(self,firmware_data,logger=None):
+    def __init__(self,firmware_data,b64encode=True,logger=None):
         if not logger:
             logger=Logging(max_level=Logging.DEBUG)
         self.logger=logger
         logger.LOG_DEBUG("Building SetFirmware request body.")
         logger.LOG_DEBUG("Length of firmware: %d" % len(firmware_data))
-        self.encoded_firmware=base64.b64encode(firmware_data)
+        if b64encode:
+            self.encoded_firmware=base64.b64encode(firmware_data)
+        else:
+            self.encoded_firmware=firmware_data
         
         logger.LOG_DEBUG("Length of encoded firmware: %d" % len(self.encoded_firmware))
     
