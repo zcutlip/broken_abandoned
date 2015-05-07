@@ -1,6 +1,6 @@
 ##Broken, Abandoned, and Forgotten Code, Part 2
 
-This code corresponds with [part 3](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In part 3, I walk the reader through how the body of the SOAP request is formed, and parsed by the UPnP daemon.
+This code corresponds with [part 3](http://shadow-file.blogspot.com/2015/05/abandoned-part-03.html) of the Broken, Abandoned, and Forgotten Code series. In part 3, I walk the reader through how the body of the SOAP request is formed, and parsed by the UPnP daemon.
 
 This update to `setfirmware.py` generates a complete SOAP request including a base64 encoded firmware blob. If a firmware file is specified on the command line, that file is encoded into the request. Otherwise a string of As is base64 encoded and included in the request.
 
