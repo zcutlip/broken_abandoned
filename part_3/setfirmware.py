@@ -23,8 +23,11 @@ class SetFirmwareRequest(object):
     
     Params
     ------
-    logger: Optional. A Bowcaster Logging object. If a logger
-            is not provided, one will be instantiated.
+    firmware_file:  Optional. The name of a file to base64 encode into
+                    the SOAP request. If no file is provided, a string
+                    of As gets encoded in its place.
+    logger:         Optional. A Bowcaster Logging object. If a logger
+                    is not provided, one will be instantiated.
     """
     MIN_CONTENT_LENGTH=102401
     def __init__(self,firmware_file=None,logger=None):
@@ -44,6 +47,13 @@ class SetFirmwareRequest(object):
         return str(self.request_headers)+str(self.request_body)
 
 class SetFirmwareRequestHeaders(object):
+    """
+    Class to generate the HTTP headers for a "SetFirmware" SOAP request.
+    
+    Params
+    ------
+    content_length: Value to specify for the Content-Length header.
+    """
     def __init__(self,content_length):
         headers="".join(["POST /soap/server_sa/SetFirmware HTTP/1.1\r\n",
                              "Accept-Encoding: identity\r\n",
@@ -61,6 +71,15 @@ class SetFirmwareRequestHeaders(object):
 
 
 class SetFirmwareBody(object):
+    """
+    Class to generate the body of a "SetFirmware" SOAP request
+    
+    Params
+    ------
+    firmware_data:  Data to base64 encode into the request.
+    logger:         Optional. A Bowcaster Logging object. If a logger
+                    is not provided, one will be instantiated.
+    """
     SOAP_REQUEST_START="</NewFirmware></SOAP-ENV:Body>"
     SOAP_REQUEST_END="</NewFirmware></SOAP-ENV:Body>"
     def __init__(self,firmware_data,logger=None):
