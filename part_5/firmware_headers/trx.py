@@ -35,7 +35,7 @@ class TrxHeader(object):
     def __init__(self,input_files,endianness,logger=None):
         
         if not logger:
-            logger=Logging()
+            logger=Logging(max_level=Logging.DEBUG)
         
         cls=self.__class__
         self.endianness=endianness
@@ -107,7 +107,7 @@ class TrxImage(object):
 	"""Class to build a TRX Firmware image from kernel and filesystem."""
 	def __init__(self, input_files,endianness,logger=None):
 		if not logger:
-			logger=Logging()
+            logger=Logging(max_level=Logging.DEBUG)
 		
 		trx_header=TrxHeader(input_files,endianness,logger=logger)
 		
