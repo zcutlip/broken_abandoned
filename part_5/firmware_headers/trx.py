@@ -2,7 +2,7 @@
 
 import sys
 import binascii
-from crc32 import CRC32
+from checksums.crc32 import CRC32
 from bowcaster.common.support import pretty_string
 from bowcaster.common import Logging
 from bowcaster.common.support import LittleEndian
@@ -10,7 +10,6 @@ from bowcaster.common.support import BigEndian
 from bowcaster.development import SectionCreator
 from bowcaster.development import OverflowBuffer
 import struct
-from checksum import LibAcosChecksum
 
 class TrxHeaderException(Exception):
     pass
@@ -104,23 +103,23 @@ class TrxHeader(object):
         return self.trx_header
 
 class TrxImage(object):
-	"""Class to build a TRX Firmware image from kernel and filesystem."""
-	def __init__(self, input_files,endianness,logger=None):
-		if not logger:
-            logger=Logging(max_level=Logging.DEBUG)
-		
-		trx_header=TrxHeader(input_files,endianness,logger=logger)
-		
-		firmware_data=str(trx_header)
-		
-		for file in input_files:
-			firmware_data+=open(file,"rb").read()
-		
-		self.firmware_data=firmware_data
-	
-	def __str__(self):
-		return self.firmware_data
-		
+    """Class to build a TRX Firmware image from kernel and filesystem."""
+    def __init__(self,input_files,endianness,logger=None):
+        if not logger:
+            logger=Logging(max_level=Logging.DEBUG)            
+        
+        trx_header=TrxHeader(input_files,endianness,logger=logger)
+        
+        firmware_data=str(trx_header)
+        
+        for file in input_files:
+            firmware_data+=open(file,"rb").read()
+        
+        self.firmware_data=firmware_data
+    
+    def __str__(self):
+        return self.firmware_data
+        
     
 if __name__ == "__main__":
     
