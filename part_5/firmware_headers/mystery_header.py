@@ -11,8 +11,9 @@ class MysteryHeader(object):
     #ambit magic gets checked with strcmp()
     #so must be null terminated,
     #but following field is big endian, with a high byte of 0.
-    MAGIC="*#$^\x00"
-
+    MAGIC="*#$^"
+    MAGIC_OFF=0
+    
     #observed size in real-world examples.
     #this may be variable
     HEADER_SIZE=58
@@ -28,7 +29,7 @@ class MysteryHeader(object):
 
         self.size=self.HEADER_SIZE
         
-        header=self.__build_header(logger=logger)
+        header=self.__build_header()
         self.header=header
 
     
@@ -36,7 +37,7 @@ class MysteryHeader(object):
         
         logger=self.logger
         
-        SC=SectionCreator(self.endianness,logger=logger)
+        SC=SectionCreator(BigEndian,logger=logger)
         SC.string_section(self.MAGIC_OFF,self.MAGIC,
                             description="Magic bytes for ambit header.")
         SC.gadget_section(self.HEADER_SIZE_OFF,self.size,"Size field representing length of ambit header.")
