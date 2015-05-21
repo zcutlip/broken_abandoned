@@ -6,8 +6,20 @@ from bowcaster.common.support import Logging
 import sys
 
 class FirmwareImage(object):
+    """
+    Class to generate Netgear R6200 firmware image from one or more file parts
+    such as a kernel and filesystem. Proprietery 58-byte header + TRX header 
+    are generated, and all parts glued together.
+    """
     
     def __init__(self,input_files,logger=None):
+        """
+        Params
+        ------
+        input_files:    List of files to concatenate and prepend headers to
+        logger:         Optional. A Bowcaster Logging object. If a logger is not 
+                        provided, one will be instantiated.
+        """
         if not logger:
             logger=Logging(max_level=Logging.DEBUG)
         self.logger=logger
@@ -48,9 +60,35 @@ def main(input_files,output_file,find_str=None):
         out.write(str(fwimage))
         out.close()
 
+def usage():
+    print "Usage: buildfw.py {output file | find= } [input file 1 [input file 2,...]]"
+    print ""
+    print "Generate a Netgear R6200 firmware image from individual parts."
+    print "Concatenate one or more firmware components (kernel, filesystem, etc.)"
+    print "and prepend a proprietary 58 byte header and a TRX header."
+    print ""
+    print "Arguments:"
+    print "  output file   \tFinal firmware image file"
+    print "  find=<pattern>\tLocate the offset of <pattern> in the stand-in"
+    print "                \t58-byte header."
+    print "                \t<pattern> may be a string or integer. If an integer,"
+    print "                \tit must be specified in hexadecimal,"
+    print "                \tprepended with \"0x\", and big endian encoded."
+    print "  input file 1 [2,...]"
+    print "                \tInput files to concatenate."
+    print ""
+    print "Examples:"
+    print "  buildfw.py firmware.chk kernel.lzma squashfs.bin"
+    print "  buildfw.py find=0x62374162 kernel.lzma squashfs.bin"
+    print "  buildfw.py find=b7Ab kernel.lzma squashfs.bin"
+
 if __name__ == "__main__":
     find=None
     filename=None
+    if len(sys.argv) < 2:
+        usage()
+        exit(1)
+        
     if sys.argv[1].startswith("find="):
         find=sys.argv[1].split("=",1)[1]
     else:
