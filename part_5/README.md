@@ -1,4 +1,4 @@
-##Broken, Abandoned, and Forgotten Code, Part 3
+##Broken, Abandoned, and Forgotten Code, Part 5
 
 This code corresponds with [part 5](http://shadow-file.blogspot.com/2015/05/abandoned-part-04.html) of the Broken, Abandoned, and Forgotten Code series. In part 5 I demonstrate how to use the Bowcaster exploit development framework to generate a stand-in for the unidentified 58 byte header in the Netgear R6200 firmware image. Using Bowcaster's pattern generator, it's easy to find the offsets of values that get parsed out when the firmware image is being validated by the router.
 
