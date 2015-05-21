@@ -9,11 +9,11 @@ import struct
 
 class MysteryHeader(object):
     """
-    Class to generate a stand-in for the 58 byte header at the beginning of
-    Netgear R6200 firmware images.
+    Class to generate a stand-in for the 58 byte unidentified header
+    at the beginning of Netgear R6200 firmware images.
     """
     
-    #ambit magic gets checked with strcmp()
+    #Magic gets checked with strcmp()
     #so must be null terminated,
     #but following field is big endian, with a high byte of 0.
     MAGIC="*#$^"
@@ -46,7 +46,7 @@ class MysteryHeader(object):
         self.header=header
 
     
-    def __build_header(self,checksum=0):
+    def __build_header(self):
         
         logger=self.logger
         
