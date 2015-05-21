@@ -13,7 +13,7 @@ You can identify the offsets and sizes of the kernel and filesystem components u
 
 Then you can generate a firmware image or find the offset into the 58-byte header of a given pattern.
 
-####Note: This program does not generate a working firmware image. It is for debugging and analyzing as described in Part 5 of the Broken, Abandoned series.
+#####Note: This program does not generate a working firmware image. It is for debugging and analyzing as described in Part 5 of the Broken, Abandoned series.
 
 Command synopsis:
 
