@@ -17,9 +17,9 @@ Here are the parts of the series published so far:
 
 [part 1](http://shadow-file.blogspot.com/2015/04/abandoned-part-01.html)  
 [part 2](http://shadow-file.blogspot.com/2015/04/abandoned-part-02.html)  
-[part 3](http://shadow-file.blogspot.com/2015/05/abandoned-part-03.html)
-[part 4](http://shadow-file.blogspot.com/2015/05/abandoned-part-04.html)
-[part 5](http://shadow-file.blogspot.com/2015/05/abandoned-part-05.html)
+[part 3](http://shadow-file.blogspot.com/2015/05/abandoned-part-03.html)  
+[part 4](http://shadow-file.blogspot.com/2015/05/abandoned-part-04.html)  
+[part 5](http://shadow-file.blogspot.com/2015/05/abandoned-part-05.html)  
 
 Note: you will require Bowcaster, which you can get [here](https://github.com/zcutlip/bowcaster).
 
