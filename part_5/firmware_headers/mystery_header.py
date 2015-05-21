@@ -8,6 +8,11 @@ from bowcaster.common.support import Logging
 import struct
 
 class MysteryHeader(object):
+    """
+    Class to generate a stand-in for the 58 byte header at the beginning of
+    Netgear R6200 firmware images.
+    """
+    
     #ambit magic gets checked with strcmp()
     #so must be null terminated,
     #but following field is big endian, with a high byte of 0.
@@ -21,6 +26,14 @@ class MysteryHeader(object):
     
     
     def __init__(self,image_data,logger=None):
+        """
+        Params
+        ------
+        image_data: The actual data of the firmware image this header should
+                    describe and be prepended to.
+        logger:     Optional. A Bowcaster Logging object. If a logger is not 
+                    provided, one will be instantiated.
+        """
         if not logger:
             logger=Logging(max_level=Logging.DEBUG)
         self.logger=logger
@@ -51,5 +64,15 @@ class MysteryHeader(object):
         return str(self.header)
     
     def find_offset(self,value):
+        """
+        Find the offset of the given value in the Bowcaster OverflowBuffer string.
+        
+        Params
+        ------
+        value:  The value whose offset should be found. May be a string or
+                integer. If an integer is provided, it will be converted to
+                a packed binary string with the same endianness as the
+                underlying OverflowBuffer object.
+        """
         return self.header.find_offset(value)
 
