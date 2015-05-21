@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Copyright (c) 2015
+# - Zachary Cutlip <uid000()gmail.com>
+# 
+# See LICENSE for more details.
+# 
+
 """
 <strike>ripped off</strike>reimplemented from:
 https://code.google.com/p/firmware-mod-kit/source/browse/src/crcalc/crc.c

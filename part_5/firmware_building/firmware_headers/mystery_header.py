@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+# Copyright (c) 2015
+# - Zachary Cutlip <uid000()gmail.com>
+# 
+# See LICENSE for more details.
+# 
 
 from bowcaster.common.support import LittleEndian
 from bowcaster.common.support import BigEndian
