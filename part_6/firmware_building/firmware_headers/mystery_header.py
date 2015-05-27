@@ -10,6 +10,7 @@ from bowcaster.common.support import BigEndian
 from bowcaster.development import OverflowBuffer
 from bowcaster.development import SectionCreator
 from bowcaster.common.support import Logging
+from checksums.libacos import LibAcosChecksum
 import struct
 
 class MysteryHeader(object):
@@ -26,9 +27,16 @@ class MysteryHeader(object):
     
     #observed size in real-world examples.
     #this may be variable
+    #Hard code for now. This can be made configurable later.
     HEADER_SIZE=58
     HEADER_SIZE_OFF=4
     
+    HEADER_CHECKSUM_OFF=36
+    
+    #This is the board ID extracted from NVRAM.
+    #Hard code for now. We can make this configurable later.
+    BOARD_ID="U12H192T00_NETGEAR"
+    BOARD_ID_OFF=40
     
     def __init__(self,image_data,logger=None):
         """
@@ -47,11 +55,17 @@ class MysteryHeader(object):
 
         self.size=self.HEADER_SIZE
         
+        logger.LOG_INFO("Building header without checksum.")
         header=self.__build_header()
+        logger.LOG_INFO("Calculating header checksum.")
+        chksum=self.__checksum(header)
+        logger.LOG_DEBUG("Calculated header checksum: 0x%08x" % chksum)
+        logger.LOG_INFO("Building header with checksum.")
+        header=self.__build_header(checksum=chksum)
         self.header=header
 
     
-    def __build_header(self):
+    def __build_header(self,checksum=0):
         
         logger=self.logger
         
@@ -59,11 +73,23 @@ class MysteryHeader(object):
         SC.string_section(self.MAGIC_OFF,self.MAGIC,
                             description="Magic bytes for ambit header.")
         SC.gadget_section(self.HEADER_SIZE_OFF,self.size,"Size field representing length of ambit header.")
+        #Set header checksum
+        SC.gadget_section(self.HEADER_CHECKSUM_OFF,checksum)
+        
+        #Set board ID
+        SC.string_section(self.BOARD_ID_OFF,self.BOARD_ID,
+                            description="Board ID string.")
         
         buf=OverflowBuffer(BigEndian,self.size,
                             overflow_sections=SC.section_list,
                             logger=logger)
         return buf
+    
+    def __checksum(self,header):
+        data=str(header)
+        size=len(data)
+        chksum=LibAcosChecksum(data,size)
+        return chksum.checksum
             
     def __str__(self):
         return str(self.header)
