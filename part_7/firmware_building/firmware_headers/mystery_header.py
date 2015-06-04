@@ -11,7 +11,11 @@ from bowcaster.development import OverflowBuffer
 from bowcaster.development import SectionCreator
 from bowcaster.common.support import Logging
 from checksums.libacos import LibAcosChecksum
+import re
 import struct
+
+class AmbitHeaderException(Exception):
+    pass
 
 class MysteryHeader(object):
     """
@@ -31,13 +35,29 @@ class MysteryHeader(object):
     HEADER_SIZE=58
     HEADER_SIZE_OFF=4
     
+    #Byte at offset 8 is unused.
+    VERSION_STRING_OFF=9
+    VERSION_STRING="V100.101.102.103_104.105.106"
+        
+    #Location of checksum of partition 1
+    PART_1_CHECKSUM_OFF=16
+    
+    #Locations of sizes of partitions 1 & 2
+    PART_1_SIZE_OFF=24
+    PART_2_SIZE=0   #partition 2 unused
+    PART_2_SIZE_OFF=28
+    
+    #location of checksum of partition 1+2
+    PART_1_2_CHECKSUM_OFF=32
+    
+    #checksum of the header itself,
     HEADER_CHECKSUM_OFF=36
     
     #This is the board ID extracted from NVRAM.
     #Hard code for now. We can make this configurable later.
     BOARD_ID="U12H192T00_NETGEAR"
     BOARD_ID_OFF=40
-    
+
     def __init__(self,image_data,logger=None):
         """
         Params
@@ -55,6 +75,12 @@ class MysteryHeader(object):
 
         self.size=self.HEADER_SIZE
         
+        logger.LOG_INFO("Calculating checksum of TRX image.")
+        self.trx_image_checksum=self.__checksum(image_data)
+        logger.LOG_DEBUG("Calculated TRX image checksum: 0x%08x" % self.trx_image_checksum)
+        self.trx_image_sz=len(image_data)
+        
+        self.version=self.__calc_version_string(self.VERSION_STRING)
         logger.LOG_INFO("Building header without checksum.")
         header=self.__build_header()
         logger.LOG_INFO("Calculating header checksum.")
@@ -79,6 +105,23 @@ class MysteryHeader(object):
         #Set board ID
         SC.string_section(self.BOARD_ID_OFF,self.BOARD_ID,
                             description="Board ID string.")
+                            
+        #Partition 1 size:
+        SC.gadget_section(self.PART_1_SIZE_OFF,
+                            self.trx_image_sz,
+                            description="Size of the TRX image. including TRX header, kernel, and filesystem.")
+        SC.gadget_section(self.PART_2_SIZE_OFF,
+                            self.PART_2_SIZE,
+                            description="Size 0 for unused second partition.")
+        
+        SC.gadget_section(self.PART_1_CHECKSUM_OFF,
+                          self.trx_image_checksum,
+                          description="Checksum of the TRX image.")
+        SC.gadget_section(self.PART_1_2_CHECKSUM_OFF,
+                          self.trx_image_checksum,
+                          description="Checksum of the TRX image. Partition 2 is unused.")
+        
+        SC.string_section(self.VERSION_STRING_OFF,self.version,description="Packed version string.")
         
         buf=OverflowBuffer(BigEndian,self.size,
                             overflow_sections=SC.section_list,
@@ -90,7 +133,20 @@ class MysteryHeader(object):
         size=len(data)
         chksum=LibAcosChecksum(data,size)
         return chksum.checksum
-            
+
+    def __calc_version_string(self,version_string):
+        version_regex="V(\d+?)\.(\d+?)\.(\d+?)\.(\d+?)_(\d+?)\.(\d+?)\.(\d+)"
+        logger=self.logger
+        logger.LOG_DEBUG("Calculating version bytes from string: %s" % version_string)
+        parts=re.match(version_regex,version_string).groups()
+        if len(parts) != 7:
+            raise AmbitHeaderException("Invalid version string: %s" % version_string)
+        version_bytes=""
+        for part in parts:
+            version_bytes+=struct.pack("B",int(part))
+        
+        return version_bytes
+        
     def __str__(self):
         return str(self.header)
     
