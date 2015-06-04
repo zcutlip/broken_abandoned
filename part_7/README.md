@@ -1,8 +1,6 @@
 ##Broken, Abandoned, and Forgotten Code, Part 6
 
-This code corresponds with [part 6](http://shadow-file.blogspot.com/2015/05/abandoned-part-06.html) of the Broken, Abandoned, and Forgotten Code series. In part 5 I continue showing how to use the Bowcaster exploit development framework to generate a stand-in for the unidentified 58 byte header in the Netgear R6200 firmware image. Two more fields are identified including an unidentified checksum.
-
-This update adds a checksum module (`checksums/libacos.py`) reimplemented in python from MIPS disassembly.
+This code corresponds with [part 7](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part I refine the 58 byte header in the Netgear R6200 firmware image even further. Two additional checksums and size fields are added as well as a packed version string. The end result leaves only 5 bytes unaccounted for.
 
 I don't provide the kernel and filesystem components from a stock firmware, so you will need to get these on your own. You may get them by using `dd` to extract them from a stock firmware:
 
