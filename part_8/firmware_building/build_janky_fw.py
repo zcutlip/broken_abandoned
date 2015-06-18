@@ -66,7 +66,7 @@ def main(input_files,output_file,find_str=None):
         out.close()
 
 def usage():
-    print "Usage: buildfw.py {output file | find= } [input file 1 [input file 2,...]]"
+    print "Usage: build_janky_fw.py {output file | find= } [input file 1 [input file 2,...]]"
     print ""
     print "Generate a Netgear R6200 firmware image from individual parts."
     print "Concatenate one or more firmware components (kernel, filesystem, etc.)"
