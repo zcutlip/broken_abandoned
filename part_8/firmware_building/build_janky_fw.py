@@ -12,9 +12,10 @@ import sys
 
 class JankyFirmwareImage(object):
     """
-    Class to generate Netgear R6200 firmware image from one or more file parts
-    such as a kernel and filesystem. Proprietary 58-byte header + TRX header 
-    are generated, and all parts glued together.
+    Class to generate a janky Netgear R6200 firmware image to be jankily parsed 
+    by upnpd using the SetFirmware SOAP action. The image will be composed from
+    one or more file parts such as a kernel and filesystem. Proprietary 58-byte
+    header + TRX header are generated, and all parts glued together.
     """
     
     def __init__(self,input_files,logger=None):

@@ -20,7 +20,9 @@ class AmbitHeaderException(Exception):
 class JankyAmbitHeader(object):
     """
     Class to generate a stand-in for the 58 byte unidentified header
-    at the beginning of Netgear R6200 firmware images.
+    at the beginning of Netgear R6200 firmware images. This class is
+    specifically to reflect how upnpd parses the firmware header, as opposed
+    to httpd's parsing of the header.
     """
     
     #Magic gets checked with strcmp()
