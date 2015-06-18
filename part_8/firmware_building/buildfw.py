@@ -6,7 +6,7 @@
 # 
 
 from firmware_headers import trx
-from firmware_headers.mystery_header import MysteryHeader
+from firmware_headers.ambit_header import AmbitHeader
 from bowcaster.common.support import Logging
 import sys
 
@@ -30,7 +30,7 @@ class FirmwareImage(object):
         self.logger=logger
         
         trx_img=trx.TrxImage(input_files,trx.LittleEndian,logger=logger)
-        header=MysteryHeader(str(trx_img),logger=logger)
+        header=AmbitHeader(str(trx_img),logger=logger)
         
         self.trx_img=trx_img
         self.header=header
