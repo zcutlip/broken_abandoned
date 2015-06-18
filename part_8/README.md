@@ -1,6 +1,6 @@
 ##Broken, Abandoned, and Forgotten Code, Part 6
 
-This code corresponds with [part 7](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part I refine the 58 byte header in the Netgear R6200 firmware image even further. Two additional checksums and size fields are added as well as a packed version string. The end result leaves only 5 bytes unaccounted for.
+This code corresponds with [part 8](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part we circle back to analyzing ``upnpd`` after reversing how ``httpd`` parses the firmware header. As such, I've added new modules to reflect what we know about how the firmware header is parsed by ``upnpd``. Those modules are ``janky_ambit_header.py`` and ``build_janky_fw.py``. Also, in part 8, the mystery header gets a name. The code has been updated to reflect the new name.
 
 I don't provide the kernel and filesystem components from a stock firmware, so you will need to get these on your own. You may get them by using `dd` to extract them from a stock firmware:
 
@@ -15,7 +15,7 @@ Then you can generate a firmware image or find the offset into the 58-byte heade
 
 Command synopsis:
 
-    Usage: buildfw.py {output file | find= } [input file 1 [input file 2,...]]
+    Usage: build_janky_fw.py {output file | find= } [input file 1 [input file 2,...]]
 
     Generate a Netgear R6200 firmware image from individual parts.
     Concatenate one or more firmware components (kernel, filesystem, etc.)
