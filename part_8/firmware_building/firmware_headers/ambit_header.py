@@ -17,7 +17,7 @@ import struct
 class AmbitHeaderException(Exception):
     pass
 
-class MysteryHeader(object):
+class AmbitHeader(object):
     """
     Class to generate a stand-in for the 58 byte unidentified header
     at the beginning of Netgear R6200 firmware images.
