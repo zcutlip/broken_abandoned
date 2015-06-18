@@ -58,3 +58,9 @@ target/
 
 # OS X
 .DS_Store
+
+#firmware building
+*.chk
+*.lzma
+*.bin
+
