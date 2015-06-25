@@ -36,7 +36,12 @@ class JankyAmbitHeader(object):
     #Hard code for now. This can be made configurable later.
     HEADER_SIZE=58
     HEADER_SIZE_OFF=4
-        
+    
+    #Locations of sizes of partitions 1 & 2
+    PART_1_SIZE_OFF=24
+    PART_2_SIZE=0   #partition 2 unused, size 0x0 in stock fw.
+    PART_2_SIZE_OFF=28
+    
     #checksum of the header itself,
     HEADER_CHECKSUM_OFF=36
     
@@ -96,6 +101,14 @@ class JankyAmbitHeader(object):
         #Set board ID
         SC.string_section(self.BOARD_ID_OFF,self.BOARD_ID,
                             description="Board ID string.")
+        
+        #Partition 1 & 2 sizes
+        SC.gadget_section(self.PART_1_SIZE_OFF,
+                            self.trx_image_sz,
+                            description="Size of the TRX image. including TRX header, kernel, and filesystem.")
+        SC.gadget_section(self.PART_2_SIZE_OFF,
+                            self.PART_2_SIZE,
+                            description="Size 0 for unused second partition.")
                                             
         
         buf=OverflowBuffer(BigEndian,self.size,
