@@ -4,7 +4,7 @@ This code corresponds with [part 9](http://shadow-file.blogspot.com) of the Brok
 
 You may wish to simply test with a <4MB blob of random data to avoid crashing ``upnpd``.
 
-Alternatively, you can try using the kernel and filesystem from a stock firmware, but an image over 4MB will result in a crash due to a bug in ``upnpd``.
+Alternatively, you can try using an actual kernel and filesystem, but an image over 4MB will result in a crash due to a bug in ``upnpd``.
 
 
 #####Note: This program does not generate a working firmware image. It is for debugging and analyzing as described in the Broken, Abandoned series.
