@@ -37,6 +37,9 @@ class JankyAmbitHeader(object):
     HEADER_SIZE=58
     HEADER_SIZE_OFF=4
     
+    #Location of checksum of partition 1
+    PART_1_CHECKSUM_OFF=16
+    
     #Locations of sizes of partitions 1 & 2
     PART_1_SIZE_OFF=24
     PART_2_SIZE=0   #partition 2 unused, size 0x0 in stock fw.
@@ -109,8 +112,11 @@ class JankyAmbitHeader(object):
         SC.gadget_section(self.PART_2_SIZE_OFF,
                             self.PART_2_SIZE,
                             description="Size 0 for unused second partition.")
-                                            
-        
+
+        #upnpd doesn't check this but the CFE bootlader does                
+        SC.gadget_section(self.PART_1_CHECKSUM_OFF,
+                          self.trx_image_checksum,
+                          description="Checksum of the TRX image.")
         buf=OverflowBuffer(BigEndian,self.size,
                             overflow_sections=SC.section_list,
                             logger=logger)
