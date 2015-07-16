@@ -1,13 +1,8 @@
-##Broken, Abandoned, and Forgotten Code, Part 6
+##Broken, Abandoned, and Forgotten Code, Part 11
 
-This code corresponds with [part 9](http://shadow-file.blogspot.com/2015/06/abandoned-part-09.html) of the Broken, Abandoned, and Forgotten Code series. In this part we fill in enough of the ambit header to satisfy ``upnpd``'s loose validation and allow the firmware to be written to flash. The ``janky_ambit_header.py`` module has been updated with the necessary header fields to accomplish this.
+This code corresponds with [part 11](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part we add one more field to the ambit header that ``upnpd``'s does not check but the CFE bootloader does. If the TRX image checksum at offset 16 is not set, the CFE will halt and the router is effectively bricked. The ``janky_ambit_header.py`` module has been updated to reflect this.
 
-You may wish to simply test with a <4MB blob of random data to avoid crashing ``upnpd``.
-
-Alternatively, you can try using an actual kernel and filesystem, but an image over 4MB will result in a crash due to a bug in ``upnpd``.
-
-
-#####Note: This program does not generate a working firmware image. It is for debugging and analyzing as described in the Broken, Abandoned series.
+Also, in part 11, we shrink the SquashFS filesystem down to that the resulting firmware image is <4MB. You should be able to generate a minimal firmware that you can test against a physical router.
 
 Command synopsis:
 
