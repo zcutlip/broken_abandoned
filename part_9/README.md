@@ -1,4 +1,4 @@
-##Broken, Abandoned, and Forgotten Code, Part 6
+##Broken, Abandoned, and Forgotten Code, Part 9
 
 This code corresponds with [part 9](http://shadow-file.blogspot.com/2015/06/abandoned-part-09.html) of the Broken, Abandoned, and Forgotten Code series. In this part we fill in enough of the ambit header to satisfy ``upnpd``'s loose validation and allow the firmware to be written to flash. The ``janky_ambit_header.py`` module has been updated with the necessary header fields to accomplish this.
 
