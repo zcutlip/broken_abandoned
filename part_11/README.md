@@ -1,6 +1,6 @@
 ##Broken, Abandoned, and Forgotten Code, Part 11
 
-This code corresponds with [part 11](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part we add one more field to the ambit header that ``upnpd``'s does not check but the CFE bootloader does. If the TRX image checksum at offset 16 is not set, the CFE will halt and the router is effectively bricked. The ``janky_ambit_header.py`` module has been updated to reflect this.
+This code corresponds with [part 11](http://shadow-file.blogspot.com/2015/07/abandoned-part-11.html) of the Broken, Abandoned, and Forgotten Code series. In this part we add one more field to the ambit header that ``upnpd``'s does not check but the CFE bootloader does. If the TRX image checksum at offset 16 is not set, the CFE will halt and the router is effectively bricked. The ``janky_ambit_header.py`` module has been updated to reflect this.
 
 Also, in part 11, we shrink the SquashFS filesystem down so that the resulting firmware image is <4MB. You should be able to generate a minimal firmware that you can test against a physical router.
 
