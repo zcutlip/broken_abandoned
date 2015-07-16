@@ -1,0 +1,114 @@
+In the <a href="http://shadow-file.blogspot.com/2015/06/abandoned-part-08.html">previous part</a>, we switched gears back to the Netgear R6200 <code>upnpd</code> after spending some time analyzing <code>httpd</code>. The HTTP daemon provided an understanding of how the firmware header is <i>supposed</i> to be constructed. We found a header parsing function in <code>upnpd</code> that was similar to its <code>httpd</code> counterpart. So similar that it has the same <code>memcpy()</code> buffer overflow. This overflow was more interesting this time around, as it did not require authentication. Additionally, we discovered a reference to the "Ambit image" via an error message string. Presumably an ambit image is a firmware format analogous to TRX. In this case, however, the ambit image encapsulates a TRX image.
+
+In this part we will identify more fields of the Ambit header, as well as run up against a limitation of QEMU: attempts to open and write to the flash memory device will fail since, in emulation, there is no actual flash memory. We'll need to patch the <code>upnpd</code> binary in order to work around this. I previously covered binary patching for emulation <a href="http://shadow-file.blogspot.com/2015/01/patching-emulating-and-debugging.html">here</a>.
+
+<h3>
+We Should Have Checked the Firmware Size Before Now</h3>
+The <code>sa_CheckBoardID()</code> function, analogous to <code>abCheckBoardID()</code> from <code>httpd</code>, returns success if the following is true:
+<ul>
+<li>The ambit magic number is found at offset 0.</li>
+<li>The header size field doesn't overflow during the <code>memcpy()</code> operation</li>
+<li>The checksum in the ambit header matches the header's actual checksum,</li>
+<li>The proper board ID string is found and the end of the ambit header.</li>
+</ul>
+After <code>sa_CheckBoardID()</code>, at 0x00423CAC, we see several 32-bit fields parsed out. It remains to be seen how these values get used; presumably they are the same fields and get used the same way as in the <code>httpd</code> firmware validation. Then the size field from offset 24 is checked. It must be less than 0x400001, or 4194305, or firmware validation fails.
+
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://www.flickr.com/photos/99298302@N02/16788460931" style="margin-left: 1em; margin-right: 1em;" title="Check image size &lt; 4MB by Zachary Cutlip, on Flickr"><img alt="Check image size &lt; 4MB" height="158" src="https://farm8.staticflickr.com/7592/16788460931_de2d5335a6.jpg" width="500" /></a></div>
+
+
+Somewhat ironically, this check can never fail, assuming the size field is truthful. If the firmware image is larger than this size, then <code>upnpd</code> will crash, having overflowed the 4MB buffer allocated for base64 decoding. In our proof-of-concept code, the size field contains a bogus value, and execution skips down to an error message.
+
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://www.flickr.com/photos/99298302@N02/16582300677" style="margin-left: 1em; margin-right: 1em;" title="Error message, image size too large by Zachary Cutlip, on Flickr"><img alt="Error message, image size too large" height="106" src="https://farm9.staticflickr.com/8639/16582300677_085dfa154f.jpg" width="500" /></a></div>
+
+
+The error message belies someone's continued confusion over exactly how this capability is supposed to work. If the size validation fails, the error message is "The kernel image is over 512Kbytes!", although the test was against a 4MB upper limit.
+
+Inserting the proper TRX image size (or "kernel size" as the error message indicates) at offset 24 gets past this step. After the check, a function is called at 0x0042428C, <code>sa_upgrade_setImageInfo()</code>, that parses out several more values from the header. Again, no validation is performed on these values at this point. It remains to be seen if they are the same fields and will be used in the same way as in <code>httpd</code>.
+
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://www.flickr.com/photos/99298302@N02/16234719943" title="sa_upgrade_setImageInfo() by Zachary Cutlip, on Flickr"><img alt="sa_upgrade_setImageInfo()" height="225" src="https://farm8.staticflickr.com/7592/16234719943_2cb865289c.jpg" width="500" /></a></div>
+
+
+After this function is called, things begin to get interesting in a few ways. After a temporary "upgrade" file is created (but never used; wtf), <code>/dev/mtd1</code> device is opened. You'll need to work around the fact that QEMU doesn't provide this device. The following following things will fail if not addressed.
+
+First, opening mtd1 will fail if it doesn't already exist. Create an empty file to ensure the <code>open()</code> operation is successful.
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="https://www.flickr.com/photos/99298302@N02/16228934983" style="margin-left: auto; margin-right: auto;" title="open /dev/mtd1 by Zachary Cutlip, on Flickr"><img alt="open /dev/mtd1" height="160" src="https://farm9.staticflickr.com/8619/16228934983_184d53dc50.jpg" width="500" /></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">Opening /dev/mtd1 with O_RDWR.</td></tr>
+</tbody></table>
+
+
+Next, a series of <code>ioctl()</code>s is performed on the open file descriptor. To understand what these operations do, it's helpful to refer to <a href="https://dev.openwrt.org/browser/trunk/package/mtd/src/mtd.c?rev=17659">mtd.c</a> from the OpenWRT source code as a guide.
+
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://www.flickr.com/photos/99298302@N02/16662892109" style="margin-left: 1em; margin-right: 1em;" title="Calling ioctl on /dev/mtd1 by Zachary Cutlip, on Flickr"><img alt="Calling ioctl on /dev/mtd1" height="151" src="https://farm8.staticflickr.com/7585/16662892109_c9ea1e8a72.jpg" width="500" /></a></div>
+
+
+The first <code>ioctl()</code> will fail in emulation since we're just providing a regular file, not a device node. Patch out this operation with something that puts 0 in $v0, such as xor $v0,$v0.
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="https://www.flickr.com/photos/99298302@N02/16641712737" style="margin-left: auto; margin-right: auto;" title="Call to ioctl patched out. by Zachary Cutlip, on Flickr"><img alt="Call to ioctl patched out." height="151" src="https://farm8.staticflickr.com/7602/16641712737_74c1972d87.jpg" width="500" /></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">ioctl is patched out.</td></tr>
+</tbody></table>
+
+
+This <code>ioctl()</code> we just patched out obtains, among other things, the erase size (i.e., block size) for the mtd device. We can simulate that result by patching at 0x0042453C where the the erase size is loaded into register $s5.
+
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://www.flickr.com/photos/99298302@N02/16668589249" style="margin-left: 1em; margin-right: 1em;" title="Obtain block size for mtd1. by Zachary Cutlip, on Flickr"><img alt="Obtain block size for mtd1." height="132" src="https://farm8.staticflickr.com/7650/16668589249_e0e7807edd.jpg" width="500" /></a></div>
+
+
+It doesn't matter a great deal what you use for the erase size in emulation. The write loop will write the firmware in blocks of that size, then it will write any remaining fractional block at the end. An actual R6200 device reports a block size of 65536, or 0x10000, so that's a good number to use. Patching this instruction with:
+
+<code>lui $s5, 1</code>
+
+loads 1 into the upper half of register $s5 and 0x0 into the lower half, resulting in a value of 0x10000.
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="https://www.flickr.com/photos/99298302@N02/16854727325" style="margin-left: auto; margin-right: auto;" title="Patch to set block size 0x10000 by Zachary Cutlip, on Flickr"><img alt="Patch to set block size 0x10000" height="113" src="https://farm8.staticflickr.com/7630/16854727325_8f02fd9343.jpg" width="500" /></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">Patch in a constant 0x10000 for mtd1 block size.</td></tr>
+</tbody></table>
+
+
+Next, in the basic block starting at 0x004245D0, there are two more <code>ioctl()</code>s. The first one most likely unlocks the current portion of flash for writing. The return value from it isn't checked, end execution immediately proceeds to the second. Based on the error message, the second one erases the block of flash so it can be rewritten. With our fake <code>/dev/mtd1</code> there's no need to erase, so we can patch out this operation as before.
+
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="https://www.flickr.com/photos/99298302@N02/16829013456" style="margin-left: auto; margin-right: auto;" title="Patch out memerase ioctl by Zachary Cutlip, on Flickr"><img alt="Patch out memerase ioctl" height="108" src="https://farm9.staticflickr.com/8734/16829013456_b575515025.jpg" width="500" /></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;">Patch out the <code>ioctl()</code> to erase flash memory.</td></tr>
+</tbody></table>
+
+
+Now, having patched out the <code>ioctl()</code>s that fail in emulation, writing to a regular file should work as normal.
+
+At this stage <code>upnpd</code> is ready to write our firmware to <code>/dev/mtd1</code>. Let's have a review of what portions of the ambit header had to be verified before getting here.
+
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://www.flickr.com/photos/99298302@N02/16676820630" title="header diagram 1 alternate by Zachary Cutlip, on Flickr"><img alt="header diagram 1 alternate" height="500" src="https://farm9.staticflickr.com/8665/16676820630_1d88c5e399.jpg" width="223" /></a></div>
+
+
+There's our familiar ambit header. It looks similar to the header diagram from our <code>httpd</code> analysis, except there's still lot of gray in there. Only five fields have been validated by <code>upnpd</code> up to this point:
+
+<ul>
+<li>Ambit magic number</li>
+<li>Header length</li>
+<li>Header checksum</li>
+<li>TRX image size (partition 1, aka "kernel")</li>
+<li>Board ID string</li>
+</ul>
+That was easier than expected. At this point when I sent the "firmware image" that has been generated from random data to <code>upnpd</code>, my QEMU machine rebooted. This is because after the write loop, <code>upnpd</code> triggers a reboot so the new firmware will take effect. Our fake "/dev/mtd1" has even grown to 3.9MB as a result of the firmware writing.
+
+<!-- HTML generated using hilite.me -->
+<div style="background: #202020; overflow: auto; padding: .2em .6em; width: auto;">
+<pre style="line-height: 125%; margin: 0;"><span style="color: #cccccc;">zach@devaron $ ls -l mtd1</span>
+<span style="color: #cccccc;">-rw-r--r-- 1 root 80 3900028 Mar 20 14:30 mtd1</span>
+</pre>
+</div>
+
+At this point we've successfully exploited the <code>SetFirmware</code> UPnP SOAP action. We've gone as far as we can go with emulation. From this point forward we'll move to actual hardware to test and develop the deployment of our firmware. In an upcoming post, I'll describe connecting to the R6200 router's debug interface over its UART connection, so get your soldering iron ready.
+
+Spoiler: I'll go ahead and say we're not quite home free yet. Don't attempt to generate an image and flash it to your router yet. At best, the write will still fail. At worst, you'll brick it. Besides not having generated a valid squashfs filesystem and TRX header, there at least two more header fields that will trip you up before you're done. Once we get access over UART figured out, it will be possible to recover a bricked device.
+
+In the next part, I'll cover generating a squashfs filesystem. I'll also discuss minimizing the size of the firmware image so we don't overflow the 4MB buffer that it gets decoded into.
