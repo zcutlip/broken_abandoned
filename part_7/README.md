@@ -1,4 +1,4 @@
-##Broken, Abandoned, and Forgotten Code, Part 6
+##Broken, Abandoned, and Forgotten Code, Part 7
 
 This code corresponds with [part 7](http://shadow-file.blogspot.com/2015/06/abandoned-part-07.html) of the Broken, Abandoned, and Forgotten Code series. In this part I refine the 58 byte header in the Netgear R6200 firmware image even further. Two additional checksums and size fields are added as well as a packed version string. The end result leaves only 5 bytes unaccounted for.
 
