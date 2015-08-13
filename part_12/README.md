@@ -1,8 +1,7 @@
-##Broken, Abandoned, and Forgotten Code, Part 11
+##Broken, Abandoned, and Forgotten Code, Part 12
 
-This code corresponds with [part 11](http://shadow-file.blogspot.com/2015/07/abandoned-part-11.html) of the Broken, Abandoned, and Forgotten Code series. In this part we add one more field to the ambit header that ``upnpd``'s does not check but the CFE bootloader does. If the TRX image checksum at offset 16 is not set, the CFE will halt and the router is effectively bricked. The ``janky_ambit_header.py`` module has been updated to reflect this.
+This code corresponds with [part 12](http://shadow-file.blogspot.coml) of the Broken, Abandoned, and Forgotten Code series. In this part we pad the ambit header with a fake ``malloc_chunk.size=0`` field to avoid crashing when the wrong pointer is passed to free().
 
-Also, in part 11, we shrink the SquashFS filesystem down so that the resulting firmware image is <4MB. You should be able to generate a minimal firmware that you can test against a physical router.
 
 Command synopsis:
 
@@ -26,3 +25,7 @@ Command synopsis:
       buildfw.py firmware.chk kernel.lzma squashfs.bin
       buildfw.py find=0x62374162 kernel.lzma squashfs.bin
       buildfw.py find=b7Ab kernel.lzma squashfs.bin
+
+With this update, assuming you've generated a working, minimized firmware, you should be able to exploit the SetFirmware vulnerability, and flash your firmware image to the router:
+
+``./setfirmware.py <stage_1_firmware.bin>``
