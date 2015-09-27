@@ -59,8 +59,12 @@ target/
 # OS X
 .DS_Store
 
+
+#compliation artifacts
+*.o
+
 #firmware building
 *.chk
 *.lzma
 *.bin
-
+rootfs.tar.gz
