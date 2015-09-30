@@ -1,3 +1,9 @@
+# Copyright (c) 2015
+# - Zachary Cutlip <uid000()gmail.com>
+# 
+# See LICENSE for more details.
+# 
+
 TRUNK?=.
 mtd-src=$(TRUNK)/mtdwriter
 

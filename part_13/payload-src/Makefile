@@ -1,3 +1,9 @@
+# Copyright (c) 2015
+# - Zachary Cutlip <uid000()gmail.com>
+# 
+# See LICENSE for more details.
+# 
+
 STAGE1_DIR=$(PWD)/stage1
 STAGE1_ROOTFS=$(STAGE1_DIR)/stage1-rootfs.bin
 BUILD_FW_DIR=$(PWD)/../
