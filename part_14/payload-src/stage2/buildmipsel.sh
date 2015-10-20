@@ -1,4 +1,10 @@
 #!/bin/sh
+# Copyright (c) 2015
+# - Zachary Cutlip <uid000()gmail.com>
+# 
+# See LICENSE for more details.
+# 
+
 
 export ARCH=mipsel
 TARGET=$1
