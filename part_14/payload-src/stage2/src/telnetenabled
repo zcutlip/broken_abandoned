@@ -7,6 +7,8 @@
 
 
 #WAN or LAN host is fine here.
+#The exploit script already knows these things. Would be nice to have
+#it auto populate these at run-time.
 host=10.12.34.56
 port=8081 
 
