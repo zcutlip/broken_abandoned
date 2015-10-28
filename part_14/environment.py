@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright (c) 2015
 # - Zachary Cutlip <uid000()gmail.com>
 # 

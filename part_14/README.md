@@ -1,8 +1,10 @@
-##Broken, Abandoned, and Forgotten Code, Part 13
+##Broken, Abandoned, and Forgotten Code, Part 14
 
-This code corresponds with [part 13](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part we build a stage 1 firmware image that will circumvent the Netgear R6200 UPnP daemon's broken update code and, after rebooting, will download and flash a stage 2 image.
+This code corresponds with [part 14](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part we build the second stage firmware image that will be flashed to the device by stage 1 and, after rebooting, will provide a remote root session.
 
-A build system to create the stage 1 firmware image can be found in payload-src. However, there are a few pieces I didn't include due to licensing.
+There have been substantial changes to the part 14 code from the previous part. While ``setfirmware.py`` is still present, there is a new exploit script, ``firmware_exploit.py``. This script uses classes declared in the former. It also provides the various connect-back servers you require to serve connections to the first and second stage payloads. It requires to command line arguments. Instead, configuration parameters are specified in ``environment.py``, which is thoroughly documented.
+
+A build system to create the stage 1 and 2 firmware images can be found in payload-src. However, there are a few pieces I didn't include due to licensing.
 
 * Kernel image (proprietary Netgear EULA)
 * Root filesystem (proprietary Netgear EULA)
@@ -20,9 +22,13 @@ Identify the offsets and sizes of the kernel and filesystem components using bin
 
 Put ``kernel-lzma.bin`` into payload-src/.
 
+Unpack the squashfs.bin into a root filesystem. Extracting a SquashFS filesystem is beyond the scope of this documentation.
+
+You'll need to put a copy of the non-minimized root filesystem in place for stage 2. Put an unmodified ``rootfs.tar.gz`` in ``exploit-src/stage2/src/``.
+
 Then, you'll need to generate a minimized root filesytem directory as described in [part 11](http://shadow-file.blogspot.com/2015/07/abandoned-part-11.html).
 
-Tar up your minimized root filesystem, and put ``rootfs.tar.gz`` in exploit-src/stage1/src/.
+Tar up your minimized root filesystem, and put ``rootfs.tar.gz`` in ``exploit-src/stage1/src/``.
 
 The mtd writer is responsible for flashing the stage 2 firmware image. I have modified this utility from OpenWRT to work with this project. Check out the source and put it in place:
 
@@ -34,7 +40,7 @@ You'll also need a little endian MIPS gcc toolchain. Ensure ``mipsel-linux-gcc``
 With the missing pieces in place, you can build the stage 1 firmware:
 
     $ cd exploit-src/
-    $ ./buildmips.sh
+    $ ./buildmipsel.sh
 
 With this update, assuming you've generated a working, minimized firmware, you should be able to exploit the ``SetFirmware`` vulnerability, and flash your firmware image to the router:
 
