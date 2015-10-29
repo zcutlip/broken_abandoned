@@ -14,8 +14,6 @@ reverse-tcp:
 	make -C $(rtcp-src) $@
 	cp $(rtcp-src)/$(RTCP) ./
 
-
-
 .rootfs.stamp:rootfs.tar.gz
 	tar zxf $<
 	touch $@
@@ -46,3 +44,6 @@ clean:
 	make -C $(rtcp-src) $@
 	rm -rf rootfs
 	rm -rf .*stamp
+
+bare: clean
+	-rm -f rootfs.tar.gz
