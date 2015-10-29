@@ -4,14 +4,13 @@
 # See LICENSE for more details.
 #
 
-SRC=$(PWD)/src
+SRC=./src
 
 MKSQUASHFS=netgear-r6200-mksquashfs
 stage2-rootfs.bin:
 	make -C $(SRC) install
 	$(MKSQUASHFS) $(SRC)/rootfs $@ -noappend -all-root
 
-clean:
+bare clean:
 	-rm -f stage2-rootfs.bin
 	make -C $(SRC) $@
-
