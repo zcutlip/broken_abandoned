@@ -37,3 +37,4 @@ clean:
 
 bare: clean
 	-rm -f $(mtd-src).tar.gz
+	-rm -f rootfs.tar.gz
