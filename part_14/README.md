@@ -42,6 +42,8 @@ With the missing pieces in place, you can build the stage 1 and 2 firmware image
     $ cd exploit-src/
     $ ./buildmipsel.sh
 
+This will generate ``stage1.chk`` and ``stage2mtd.bin`` files. Put them in the SRVROOT directory specified in ``environment.py``.
+
 With this update, assuming you've generated a working, minimized firmware, you should be able to exploit the ``SetFirmware`` vulnerability, and flash your firmware image to the router. Edit environment.py and specify the appropriate connect-back ports, target IP address and port, names of stage 1 and 2 files, and the directory to serve them out of. Then run:
 
 ``./firmware_exploit.py``
