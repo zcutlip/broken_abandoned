@@ -1,6 +1,6 @@
 ##Broken, Abandoned, and Forgotten Code, Part 14
 
-This code corresponds with [part 14](http://shadow-file.blogspot.com) of the Broken, Abandoned, and Forgotten Code series. In this part we build the second stage firmware image that will be flashed to the device by stage 1 and, after rebooting, will provide a remote root session.
+This code corresponds with [part 14](http://shadow-file.blogspot.com/2015/11/abandoned-part-14.html) of the Broken, Abandoned, and Forgotten Code series. In this part we build the second stage firmware image that will be flashed to the device by stage 1 and, after rebooting, will provide a remote root session.
 
 There have been substantial changes to the part 14 code from the previous part. While ``setfirmware.py`` is still present, there is a new exploit script, ``firmware_exploit.py``. This script uses classes declared in the former. It also provides the various connect-back servers you require to serve connections to the first and second stage payloads. It requires no command line arguments. Instead, configuration parameters are specified in ``environment.py``, which is thoroughly documented.
 
