@@ -163,3 +163,52 @@ class AmbitHeader(object):
         """
         return self.header.find_offset(value)
 
+
+class AmbitHeaderFromFile(AmbitHeader):
+    def __init__(self,ambit_fw_file,logger=None):
+        if not logger:
+            logger=Logging(max_level=Logging.DEBUG)
+        self.logger=logger
+        self.__parse_ambit(ambit_fw_file)
+    
+    def __parse_ambit(self,ambit_fw_file):
+        """
+        only do partial parse because right now I only need the trx checksum.
+        """
+        logger=self.logger
+        infile=open(ambit_fw_file,"rb")
+        
+        #Validate "*#$^" ambit sig
+        infile.seek(self.MAGIC_OFF)
+        magic=infile.read(4)
+        if magic != self.MAGIC:
+            raise Excception("Ambit magic doesn't match.")
+        self.magic=magic
+        
+        #Get location of TRX image
+        infile.seek(self.HEADER_SIZE_OFF)
+        trx_img_off=infile.read(4)
+        trx_img_off=struct.unpack(">L",trx_img_off)[0]
+        self.trx_img_off=trx_img_off
+        logger.LOG_DEBUG("Got TRX image offset: %d" % trx_img_off)
+        
+        #Get size of TRX image
+        infile.seek(self.PART_1_SIZE_OFF)
+        trx_img_size=infile.read(4)
+        trx_img_size=struct.unpack(">L",trx_img_size)[0]
+        self.trx_img_size=trx_img_size
+        logger.LOG_DEBUG("Got TRX image size: %d" % trx_img_size)
+        
+        #Get checksum for TRX image
+        infile.seek(self.PART_1_CHECKSUM_OFF)
+        trx_checksum=infile.read(4)
+        trx_checksum=struct.unpack(">L",trx_checksum)[0]
+        self.trx_checksum=trx_checksum
+        logger.LOG_DEBUG("Got TRX checksum 0x%0x" % trx_checksum)
+        
+        
+    def packed_trx_img_size(self):
+        return struct.pack("<L",self.trx_img_size)
+    
+    def packed_trx_checksum(self):
+        return struct.pack("<L",self.trx_checksum)
