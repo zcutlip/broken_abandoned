@@ -22,14 +22,16 @@ Here are the parts of the series published so far (not all installments have upd
 [part 3](http://shadow-file.blogspot.com/2015/05/abandoned-part-03.html)  
 [part 4](http://shadow-file.blogspot.com/2015/05/abandoned-part-04.html)  
 [part 5](http://shadow-file.blogspot.com/2015/05/abandoned-part-05.html)  
-[part 6](http://shadow-file.blogspot.com/2015/05/abandoned-part-06.html)
-[part 7](http://shadow-file.blogspot.com/2015/06/abandoned-part-07.html)
-[part 8](http://shadow-file.blogspot.com/2015/06/abandoned-part-08.html)
-[part 9](http://shadow-file.blogspot.com/2015/06/abandoned-part-09.html)
-[part 10](http://shadow-file.blogspot.com/2015/07/abandoned-part-10.html)
-[part 11](http://shadow-file.blogspot.com/2015/07/abandoned-part-11.html)
-[part 12](http://shadow-file.blogspot.com/2015/09/abandoned-part-12.html)
-[part 13]
+[part 6](http://shadow-file.blogspot.com/2015/05/abandoned-part-06.html)  
+[part 7](http://shadow-file.blogspot.com/2015/06/abandoned-part-07.html)  
+[part 8](http://shadow-file.blogspot.com/2015/06/abandoned-part-08.html)  
+[part 9](http://shadow-file.blogspot.com/2015/06/abandoned-part-09.html)  
+[part 10](http://shadow-file.blogspot.com/2015/07/abandoned-part-10.html)  
+[part 11](http://shadow-file.blogspot.com/2015/07/abandoned-part-11.html)  
+[part 12](http://shadow-file.blogspot.com/2015/09/abandoned-part-12.html)  
+[part 13](http://shadow-file.blogspot.com/2015/10/abandoned-part-13.html)  
+[part 14](http://shadow-file.blogspot.com/2015/11/abandoned-part-14.html)  
+
 
 Note: you will require Bowcaster, which you can get [here](https://github.com/zcutlip/bowcaster).
 
