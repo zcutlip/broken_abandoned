@@ -67,4 +67,6 @@ target/
 *.chk
 *.lzma
 *.bin
-rootfs.tar.gz
+#directory containing non-version controlled tarballs
+#user has to provide these
+_tarballs
