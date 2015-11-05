@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from ambit.ambit_creator import AmbitHeaderFromFile
+from firmware_headers.ambit_header import AmbitHeaderFromFile
 from bowcaster.common.support import Logging
 import os
 import sys
